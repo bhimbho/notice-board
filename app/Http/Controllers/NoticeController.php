@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\NoticeStoreRequest;
 use App\Models\Notice;
 use App\Models\User;
+use App\Notifications\NoticeBoardNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class NoticeController extends Controller
 {
@@ -28,7 +30,7 @@ class NoticeController extends Controller
      */
     public function create()
     {
-        //
+        // dd('create');
     }
 
     /**
@@ -39,34 +41,35 @@ class NoticeController extends Controller
      */
     public function store(NoticeStoreRequest $request)
     {
-        Notice::create([
+        $notice = Notice::create([
             'title' => $request->title,
             'description' => $request->description,
             'admin_id' => auth()->id(),
         ]);
         
         $admins = User::all();
+        Notification::send($admins, new NoticeBoardNotification($notice));
         return redirect()->route('notice-manager.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Notice  $notice
+     * @param  \App\Models\Notice  $notice_manager
      * @return \Illuminate\Http\Response
      */
-    public function show(Notice $notice)
+    public function show(Notice $notice_manager)
     {
-        //
+        // dd('show');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Story  $notice
+     * @param  \App\Models\Notice  $notice_manager
      * @return \Illuminate\Http\Response
      */
-    public function edit(Notice $story)
+    public function edit(Notice $notice_manager)
     {
         //
     }
@@ -75,10 +78,10 @@ class NoticeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Story  $notice
+     * @param  \App\Models\Notice  $notice_manager
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Notice $story)
+    public function update(Request $request, Notice $notice_manager)
     {
         //
     }
@@ -86,11 +89,23 @@ class NoticeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Notice  $notice
+     * @param  \App\Models\Notice  $notice_manager
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Notice $story)
+    public function destroy(Notice $notice_manager)
     {
-        //
+        $notice_manager->delete();
+        redirect()->route('notice-manager.index');
+    }
+
+    public function approve(Notice $notice)
+    {
+        if ($notice->is_approved()) {
+            return "Notice Already Approved Successfully";
+        }
+
+        $notice->status = 1;
+        $notice->update();
+        return "Updated Successfully";
     }
 }

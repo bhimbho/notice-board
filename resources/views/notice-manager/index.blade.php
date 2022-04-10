@@ -13,10 +13,10 @@
                             <form method="POST" action="{{ route('notice-manager.store') }}">
                                 @csrf
         
-                                <div class="row mb-3">
+                                <div class="mb-3">
                                     <label for="email" class="">{{ __('Title') }}</label>
         
-                                    <div class="col-md-6">
+                                    <div class="">
                                         <input id="title" type="title" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title') }}" required autocomplete="title" autofocus>
         
                                         @error('title')
@@ -27,10 +27,10 @@
                                     </div>
                                 </div>
         
-                                <div class="row mb-3">
+                                <div class=" mb-3">
                                     <label for="password" class="">{{ __('Description') }}</label>
         
-                                    <div class="col-md-6">
+                                    <div class="">
                                         <textarea id="editor" class="form-control @error('description') is-invalid @enderror" name="description" required>
                                         </textarea>
         
@@ -42,12 +42,20 @@
                                     </div>
                                 </div>
                                 <button class="btn btn-info">Send for Approval</button>
-                              
                             </form>
                         </div>
                         <div class="col-md-6">
-                            <table>
-                                
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>S/N</th>
+                                    <th>Title</th>
+                                </tr>
+                                @foreach ($notices as $notice)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $notice->title }}</td>
+                                </tr>
+                                @endforeach
                             </table>
                         </div>
                     </div>

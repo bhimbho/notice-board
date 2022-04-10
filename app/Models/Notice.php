@@ -11,5 +11,8 @@ class Notice extends Model
 
     protected $fillable = ['title', 'description', 'admin_id'];
 
-
+    public function is_approved()
+    {
+        return $this->status != 0;
+    }
 }

@@ -6,19 +6,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
-class NoticeBoardNotification extends Notification
+class NoticeBoardNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    private  $title;
+    private  $description;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($data)
     {
-        //
+        $this->title = $data->title;
+        $this->description = $data->description;
     }
 
     /**
@@ -41,8 +45,9 @@ class NoticeBoardNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
+                    ->line('New Post Created:' . $this->title)
+                    ->line(new HtmlString($this->description))
+                    ->action('Notification Action', Route('approve-notice', $notifiable->id))
                     ->line('Thank you for using our application!');
     }
 
